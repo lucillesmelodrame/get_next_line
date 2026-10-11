@@ -2,20 +2,22 @@
 #include <stdio.h>
 #include <fcntl.h>
 
-int	main(void)
+int	main(int argc, char **argv)
 {
 	int	fd;
 	char	*line;
 
-	fd = open("test.txt", O_RDONLY);
-//	fd = 0;
+	fd = 0;
+	if (argc > 1)
+		fd = open(argv[1], O_RDONLY);
 	line = get_next_line(fd);
-//	while (line)
-//	{
+	while (line)
+	{
 		printf("[%s]", line);
 		free(line);
 		line = get_next_line(fd);
-//	}
-	free(line);
-	close(fd);
+	}
+	if (fd > 0)
+		close(fd);
+	return (0);
 }
