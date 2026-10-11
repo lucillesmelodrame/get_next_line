@@ -6,35 +6,11 @@
 /*   By: sonfong <sonfong@student.42kl.edu.my>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/26 19:23:42 by sonfong           #+#    #+#             */
-/*   Updated: 2026/10/09 12:30:34 by melodrame        ###   ########.fr       */
+/*   Updated: 2026/10/12 03:36:59 by melodrame        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
-void	*my_calloc(size_t n, size_t size)
-{
-	char	*tmp;
-	size_t	i;
-
-	i = 0;
-	if (n == 0 || size == 0)
-	{
-		tmp = malloc(1);
-		return (tmp);
-	}
-	if (n > (size_t) - 1 / size)
-		return (NULL);
-	tmp = malloc(n * size);
-	if (!tmp)
-		return (NULL);
-	while (i < n * size)
-	{
-		tmp[i] = 0;
-		i++;
-	}
-	return (tmp);
-}
 
 size_t	my_strlen(const char *str)
 {
@@ -48,7 +24,7 @@ size_t	my_strlen(const char *str)
 	return (i);
 }
 
-char	*my_strjoin(char const *s1, char const *s2)
+char	*my_strjoin(char const *s1, char const *s2, size_t len)
 {
 	size_t	i;
 	size_t	j;
@@ -56,19 +32,24 @@ char	*my_strjoin(char const *s1, char const *s2)
 
 	i = 0;
 	j = 0;
-	str = my_calloc((my_strlen(s1) + my_strlen(s2) + 1), sizeof(char));
+	str = malloc((my_strlen(s1) + len + 1) * sizeof(char));
 	if (!str)
+	{
+		free((void *)s1);
 		return (NULL);
+	}
 	while (s1 && s1[i])
 	{
 		str[i] = s1[i];
 		i++;
 	}
-	while (s2[j])
+	while (j < len)
 	{
 		str[i + j] = s2[j];
 		j++;
 	}
+	str[i + j] = '\0';
+	free((void *)s1);
 	return (str);
 }
 
@@ -88,19 +69,48 @@ char	*find_newline(const char *str)
 	return (NULL);
 }
 
-char	*my_substr(char const *s, unsigned int start, size_t len)
+char	*read_to_stash(int fd, char *stash)
 {
-	char	*str;
+	ssize_t	ret;
+	char	*buf;
+
+	buf = malloc((BUFFER_SIZE + 1) * sizeof(char));
+	ret = 1;
+	if (!buf)
+	{
+		free(stash);
+		return (NULL);
+	}
+	while (ret > 0 && !find_newline(stash))
+	{
+		ret = read(fd, buf, BUFFER_SIZE);
+		if (ret >= 0)
+			stash = my_strjoin(stash, buf, ret);
+		if (ret == -1 || !stash)
+		{
+			free(buf);
+			free(stash);
+			return (NULL);
+		}
+	}
+	free(buf);
+	return (stash);
+}
+
+char	*my_strdup(const char *str)
+{
+	char	*tmp;
 	size_t	i;
 
-	str = my_calloc(len + 1, sizeof(char));
-	if (!str)
-		return (NULL);
 	i = 0;
-	while (i < len)
+	tmp = malloc((my_strlen(str) + 1) * sizeof(char));
+	if (!tmp)
+		return (NULL);
+	while (str[i])
 	{
-		str[i] = s[i + start];
+		tmp[i] = str[i];
 		i++;
 	}
-	return (str);
+	tmp[i] = '\0';
+	return (tmp);
 }
