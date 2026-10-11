@@ -1,3 +1,4 @@
-# ignore all .txt files that are used for testing
-
+# ignore all .txt and main files that are used for testing
 *.txt
+main.c
+main1.c
