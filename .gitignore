@@ -2,5 +2,10 @@
 *.txt
 main.c
 main1.c
+try_read.c
 # ignore a.out ALWAYS
 a.out
+# n ignore testers i use
+/gnlTester
+/get_next_line_tester
+gnl_tester.c
