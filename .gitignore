@@ -5,6 +5,7 @@ main1.c
 try_read.c
 # ignore a.out ALWAYS
 a.out
+try_read
 # n ignore testers i use
 /gnlTester
 /get_next_line_tester
